@@ -161,7 +161,7 @@ else:
         st.session_state.messages = [
             {
                 "role": "model",
-                "content": "Hello and a very warm welcome! 😊 I am delighted to help you get to know Mehdi Chemsi. Whether you're curious about his embedded security work at Intel, his global field support across Asia and EMEA, or his 17+ years in semiconductor engineering, please feel free to ask!"
+                "content": "Hello and a very warm welcome! 😊 I am delighted to help you get to know Mehdi Chemsi. Whether you're curious about his work in embedded application engineering or embedded security at Intel, his global field support across Asia and EMEA at STMicroelectronics and NXP Semiconductors, or his 17+ years in semiconductor engineering, please feel free to ask!"
             }
         ]
 
