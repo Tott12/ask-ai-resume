@@ -8,7 +8,7 @@ st.set_page_config(
     layout="centered"
 )
 
-# Custom CSS for high contrast, crystal clear text readability, and sleek dark mode
+# Custom CSS for high contrast, dark sidebar, and crystal clear readability
 st.markdown("""
     <style>
     .stApp {
@@ -19,6 +19,16 @@ st.markdown("""
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
+    
+    /* Force sidebar to dark mode with bright white text */
+    [data-testid="stSidebar"] {
+        background-color: #0b1329 !important;
+        color: #f8fafc !important;
+    }
+    [data-testid="stSidebar"] p, [data-testid="stSidebar"] li, [data-testid="stSidebar"] span, [data-testid="stSidebar"] label {
+        color: #f8fafc !important;
+        font-size: 0.95rem !important;
+    }
     
     /* Force crystal-clear high-contrast bright white text for all chat messages and bullet points */
     .stChatMessage p, .stChatMessage li, .stChatMessage span, .stMarkdown p, .stMarkdown li {
