@@ -8,7 +8,7 @@ st.set_page_config(
     layout="centered"
 )
 
-# Custom CSS for a sleek, modern look and hiding default Streamlit elements
+# Custom CSS for a sleek, modern look and fixing input text visibility
 st.markdown("""
     <style>
     .stApp {
@@ -20,9 +20,13 @@ st.markdown("""
     footer {visibility: hidden;}
     header {visibility: hidden;}
     
-    .stChatInputContainer input {
-        background-color: #1e293b !important;
+    /* Fix chat input background and text color visibility */
+    .stChatInput textarea {
         color: #f8fafc !important;
+        background-color: #1e293b !important;
+    }
+    .stChatInputContainer {
+        background-color: #1e293b !important;
         border: 1px solid #334155 !important;
         border-radius: 12px !important;
     }
