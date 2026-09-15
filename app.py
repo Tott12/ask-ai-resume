@@ -1,0 +1,136 @@
+import streamlit as st
+from google import genai
+
+# Page configuration
+st.set_page_config(
+    page_title="Mehdi Chemsi - Ask AI Resume",
+    page_icon="🤖",
+    layout="centered"
+)
+
+# Custom CSS for a sleek, modern look and hiding default Streamlit elements
+st.markdown("""
+    <style>
+    .stApp {
+        background-color: #0f172a;
+        color: #f8fafc;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    
+    .stChatInputContainer input {
+        background-color: #1e293b !important;
+        color: #f8fafc !important;
+        border: 1px solid #334155 !important;
+        border-radius: 12px !important;
+    }
+    
+    .profile-card {
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        border: 1px solid #334155;
+        padding: 20px;
+        border-radius: 16px;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+# Kinder, Warmer Professional Resume Context / System Instructions
+RESUME_CONTEXT = """
+You are a warm, exceptionally polite, and welcoming AI assistant representing Mehdi Chemsi (مهدي الشمسي), a Senior Software Product Application and Embedded Security Engineer based in Veghel, Netherlands. 
+
+Your goal is to greet anyone visiting this page with genuine kindness and enthusiasm, and to answer any questions they have about Mehdi's professional background, technical expertise, and career history with grace and clarity.
+
+Candidate Profile Summary:
+- Name: Mehdi Chemsi (مهدي الشمسي)
+- Location: Veghel, Netherlands
+- Current Role: Senior Software Product Application and Embedded Security Engineer at Intel Corporation.
+- Career Background: Extensive semiconductor industry experience spanning software development, System-on-Chip (SoC) architecture, firmware engineering, and hardware security across companies including STMicroelectronics, NXP Semiconductors, and Intel Corporation.
+- Core Technical Expertise:
+  * Embedded Systems & Processors: VLIW core architectures, Cadence Tensilica Vision 341 DSPs, microcontrollers (STM32, Raspberry Pi), RTOS (FreeRTOS, Zephyr).
+  * Compilers & Toolchains: GCC, LLVM, GDB, CMake, Xtensa Xplorer IDE.
+  * Hardware Security & Compliance: Root of Trust, Secure Boot, Trusted Execution Environments, ARM TrustZone, TPM, Hardware Security Modules (HSMs), FIPS 140-3 certifiability, and EU Cyber Resilience Act compliance.
+  * Software & Development Tooling: Linux environments, WSL2, Ubuntu, Bash, Zsh, Git, OpenSSL, Python, C/C++, and static analysis tools (SonarQube, Coverity, Flawfinder, Cppcheck).
+- Languages: Fluent in English, French, and Arabic.
+
+Guidelines for Responding:
+- Maintain a warm, polite, encouraging, and deeply approachable tone. Always make recruiters and visitors feel valued.
+- Base your answers strictly on the profile details provided above. If asked about something outside this scope, politely and warmly clarify or pivot to related engineering strengths.
+"""
+
+# --- SIDEBAR PROFILE & API CONFIG ---
+with st.sidebar:
+    st.markdown("""
+        <div class="profile-card">
+            <h2 style="margin:0; font-size: 1.25rem; color: #f8fafc;">Mehdi Chemsi</h2>
+            <p style="margin:5px 0 0 0; font-size: 0.85rem; color: #94a3b8;">Senior Embedded Security Engineer</p>
+            <p style="margin:5px 0 0 0; font-size: 0.75rem; color: #38bdf8;">📍 Veghel, Netherlands • Intel</p>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown("### 💡 Quick Background")
+    st.markdown("- **Current:** Intel Corporation\n- **Specialty:** SoC Architecture & Hardware Security\n- **Stack:** C/C++, Python, Linux, VLIW, FreeRTOS")
+    
+    st.markdown("---")
+    
+    api_key = None
+    try:
+        api_key = st.secrets["GEMINI_API_KEY"]
+    except Exception:
+        api_key = st.text_input("Gemini API Key (Local Testing)", type="password", help="Enter your Google AI Studio key for local testing.")
+
+# --- MAIN CHAT INTERFACE ---
+st.markdown("<h1 style='text-align: center; font-size: 2rem; margin-bottom: 0;'>💬 Ask AI Resume</h1>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: #94a3b8; margin-bottom: 30px;'>It is a pleasure to welcome you! Feel free to explore Mehdi's engineering background below.</p>", unsafe_allow_html=True)
+
+if not api_key:
+    st.warning("⚠️ Please provide a Gemini API Key in the sidebar to start the chat for local testing.")
+else:
+    client = genai.Client(api_key=api_key)
+
+    # Initialize chat history with a kinder greeting
+    if "messages" not in st.session_state:
+        st.session_state.messages = [
+            {
+                "role": "model",
+                "content": "Hello and a very warm welcome! 😊 I am delighted to help you get to know Mehdi Chemsi. Whether you're curious about his embedded security work at Intel, his experience with VLIW core architectures, or his background in semiconductor engineering, please feel free to ask!"
+            }
+        ]
+
+    # Display chat history
+    for message in st.session_state.messages:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
+
+    # Handle user input
+    if prompt := st.chat_input("Ask a question (e.g., 'What is Mehdi's experience with Secure Boot and Hardware Security?')"):
+        st.session_state.messages.append({"role": "user", "content": prompt})
+        with st.chat_message("user"):
+            st.markdown(prompt)
+
+        with st.chat_message("model"):
+            with st.spinner("Thinking..."):
+                try:
+                    chat_history = [
+                        {"role": "user" if m["role"] == "user" else "model", "parts": [m["content"]]}
+                        for m in st.session_state.messages[:-1]
+                    ]
+                    
+                    response = client.models.generate_content(
+                        model='gemini-2.5-flash',
+                        contents=chat_history + [{"role": "user", "parts": [prompt]}],
+                        config={
+                            'system_instruction': RESUME_CONTEXT,
+                            'temperature': 0.3,
+                        }
+                    )
+                    reply = response.text
+                    st.markdown(reply)
+                except Exception as e:
+                    reply = f"An error occurred: {e}"
+                    st.error(reply)
+
+        st.session_state.messages.append({"role": "model", "content": reply})
