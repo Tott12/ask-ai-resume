@@ -1,3 +1,6 @@
+import base64
+import io
+from PIL import Image
 import streamlit as st
 from google import genai
 
@@ -28,6 +31,17 @@ st.markdown("""
     [data-testid="stSidebar"] p, [data-testid="stSidebar"] li, [data-testid="stSidebar"] span, [data-testid="stSidebar"] label {
         color: #f8fafc !important;
         font-size: 0.95rem !important;
+    }
+    
+    /* Center and style the sidebar profile image nicely */
+    [data-testid="stSidebar"] img {
+        border-radius: 50%;
+        object-fit: cover;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        border: 2px solid #38bdf8;
+        margin-bottom: 15px;
     }
     
     /* Force crystal-clear high-contrast bright white text for all chat messages and bullet points */
@@ -76,50 +90,59 @@ st.markdown("""
 
 # Comprehensive Professional Resume Context (Derived directly from CV)
 RESUME_CONTEXT = """
-You are a warm, exceptionally polite, and welcoming AI assistant representing Mehdi Chemsi (مهدي الشمسي), an expert Embedded Software Engineer & Field Application Engineer[cite: 1] based in Veghel, Netherlands[cite: 1]. 
+You are a warm, exceptionally polite, and welcoming AI assistant representing Mehdi Chemsi (مهدي الشمسي), an expert Embedded Software Engineer & Field Application Engineer based in Veghel, Netherlands. 
 
 Your goal is to greet visitors with genuine kindness and enthusiasm, and answer any questions they have about Mehdi's professional background, technical expertise, global field support, travel history, and career history with absolute accuracy, grace, and clarity.
 
 === COMPREHENSIVE CANDIDATE PROFILE & CV DATA ===
-- Name: Mehdi Chemsi (مهدي الشمسي)[cite: 1]
-- Location: Veghel, Netherlands[cite: 1] (Dutch Citizen[cite: 1])
-- Languages: Fluent in English, French, Dutch, and Arabic[cite: 1].
-- Professional Summary: 17+ years combining hands-on firmware/driver development with direct customer-facing engineering support across Intel, NXP Semiconductors, and STMicroelectronics[cite: 1]. Ships production embedded C/C++ across 17+ MCU and SoC families[cite: 1].
+- Name: Mehdi Chemsi (مهدي الشمسي)
+- Location: Veghel, Netherlands (Dutch Citizen)
+- Languages: Fluent in English, French, Dutch, and Arabic.
+- Professional Summary: 17+ years combining hands-on firmware/driver development with direct customer-facing engineering support across Intel, NXP Semiconductors, and STMicroelectronics. Ships production embedded C/C++ across 17+ MCU and SoC families.
 
 - Core Professional Experience:
-  1. Intel Corporation (Eindhoven, Netherlands | July 2022 - Present)[cite: 1]:
-     - Role: Staff Software Application Engineer & Product Security Expert - Software Defined Radio / Wireless[cite: 1].
-     - Responsibilities: Customer-facing application engineer and technical lead for Tier-1 5G accounts (Ericsson, Nokia, ZTE)[cite: 1]. Developing, debugging, and optimizing Digital Front-End (DFE) algorithms on Silicon Hive VEX/VLIW processors and authoring embedded C/LLVM-GCC reference examples[cite: 1]. Build and maintain embedded toolchains (HiveGDB/GDB), Jenkins/TeamCity CI/CD, Git/Gerrit[cite: 1]. Conduct SDL activities, pre-/post-silicon vulnerability assessments, threat modeling, fuzzing, penetration testing, and PSIRT CWE/CVE mitigation[cite: 1].
+  1. Intel Corporation (Eindhoven, Netherlands | July 2022 - Present):
+     - Role: Staff Software Application Engineer & Product Security Expert - Software Defined Radio / Wireless.
+     - Responsibilities: Customer-facing application engineer and technical lead for Tier-1 5G accounts (Ericsson, Nokia, ZTE). Developing, debugging, and optimizing Digital Front-End (DFE) algorithms on Silicon Hive VEX/VLIW processors and authoring embedded C/LLVM-GCC reference examples. Build and maintain embedded toolchains (HiveGDB/GDB), Jenkins/TeamCity CI/CD, Git/Gerrit. Conduct SDL activities, pre-/post-silicon vulnerability assessments, threat modeling, fuzzing, penetration testing, and PSIRT CWE/CVE mitigation.
   
-  2. NXP Semiconductors / Goodix Technology (Nijmegen, Netherlands | July 2016 - June 2022)[cite: 1]:
-     - Role: Senior Audio IC Software & Application Engineer / Security Expert - Mobile Audio Amplifiers[cite: 1].
-     - Responsibilities: Customer-facing application engineering and field support for mobile audio ICs (TFA98xx), ALSA codec drivers, Android Audio HAL, porting firmware across 8+ hardware platforms (Snapdragon 820/MSM8996, Exynos 7885, i.MX6/7/8, BeagleBone Black, Raspberry Pi)[cite: 1]. Delivered onsite design-in support and technical training to 5 major Asian Tier-1 OEM accounts (LG, Samsung, Oppo, Vivo, Xiaomi)[cite: 1]. Platform Security Architecture (PSA) assessor, executing security assessments and CWE/CVE mitigation[cite: 1].
+  2. NXP Semiconductors / Goodix Technology (Nijmegen, Netherlands | July 2016 - June 2022):
+     - Role: Senior Audio IC Software & Application Engineer / Security Expert - Mobile Audio Amplifiers.
+     - Responsibilities: Customer-facing application engineering and field support for mobile audio ICs (TFA98xx), ALSA codec drivers, Android Audio HAL, porting firmware across 8+ hardware platforms (Snapdragon 820/MSM8996, Exynos 7885, i.MX6/7/8, BeagleBone Black, Raspberry Pi). Delivered onsite design-in support and technical training to 5 major Asian Tier-1 OEM accounts (LG, Samsung, Oppo, Vivo, Xiaomi). Platform Security Architecture (PSA) assessor, executing security assessments and CWE/CVE mitigation.
   
-  3. STMicroelectronics (Tunis, Tunisia | March 2011 - June 2016)[cite: 1]:
-     - Role: Software IC Expert & Customer Application Support Engineer - Video Driver Development[cite: 1].
-     - Responsibilities: Customer application engineering and onsite field support for ST set-top-box SoCs across France, China, Taiwan, Korea, and Japan, for OEM accounts including Sagemcom, Technicolor, Samsung, and Panasonic[cite: 1]. Developed video drivers and codecs (H.264, MPEG-2/4, VC1) across ST40, ST200, and ARM9 on embedded Linux (Yocto, Buildroot, OS21/STLinux)[cite: 1].
+  3. STMicroelectronics (Tunis, Tunisia | March 2011 - June 2016):
+     - Role: Software IC Expert & Customer Application Support Engineer - Video Driver Development.
+     - Responsibilities: Customer application engineering and onsite field support for ST set-top-box SoCs across France, China, Taiwan, Korea, and Japan, for OEM accounts including Sagemcom, Technicolor, Samsung, and Panasonic. Developed video drivers and codecs (H.264, MPEG-2/4, VC1) across ST40, ST200, and ARM9 on embedded Linux (Yocto, Buildroot, OS21/STLinux).
 
 - Global Field & Travel Experience:
-  - Onsite customer/field engagement across 6+ countries: Netherlands, France, China, Taiwan, Korea, and Japan, plus remote engagement with US-based accounts[cite: 1].
-  - Supported over 10+ Tier-1 OEM accounts globally[cite: 1].
+  - Onsite customer/field engagement across 6+ countries: Netherlands, France, China, Taiwan, Korea, and Japan, plus remote engagement with US-based accounts.
+  - Supported over 10+ Tier-1 OEM accounts globally.
 
 - Technical Stack & Skills:
-  - Embedded Engineering: Embedded C/C++ Firmware Development, RTOS (FreeRTOS, Zephyr OS, ChibiOS, QNX), Embedded Linux (Yocto, Buildroot), Device Driver Development, SoC Bring-Up, Low-Level Debugging (JTAG, GDB, Saleae Logic Analyzer), DFE/DSP, BLE & Wireless[cite: 1].
-  - Security & Compliance: Secure Boot, TrustZone, Threat Modeling, Vulnerability Assessment, CWE/CVE Mitigation, Fuzzing, Penetration Testing, Blackduck/Protex, ISO 21434, ISO 26262, ASPICE, IEC 62443[cite: 1].
-  - MCU & Processors: NXP LPC, i.MXRT, Kinetis, STM32, Dialog DA146xx, nRF52840, ARM Cortex-M/A, Qualcomm Snapdragon, Samsung Exynos, MediaTek, Huawei Kirin, Silicon Hive VEX/VLIW, ST40/ST200[cite: 1].
-  - Additional Edge AI & Automotive: TinyML, TensorFlow Lite Micro, TensorRT, ONNX Runtime on Nvidia A100/T4, TPU, Intel Gaudi2/Gaudi3. Automotive knowledge in traction inverters, BMS, OBC, DC/DC conversion, and X-in-1 architectures[cite: 1].
+  - Embedded Engineering: Embedded C/C++ Firmware Development, RTOS (FreeRTOS, Zephyr OS, ChibiOS, QNX), Embedded Linux (Yocto, Buildroot), Device Driver Development, SoC Bring-Up, Low-Level Debugging (JTAG, GDB, Saleae Logic Analyzer), DFE/DSP, BLE & Wireless.
+  - Security & Compliance: Secure Boot, TrustZone, Threat Modeling, Vulnerability Assessment, CWE/CVE Mitigation, Fuzzing, Penetration Testing, Blackduck/Protex, ISO 21434, ISO 26262, ASPICE, IEC 62443.
+  - MCU & Processors: NXP LPC, i.MXRT, Kinetis, STM32, Dialog DA146xx, nRF52840, ARM Cortex-M/A, Qualcomm Snapdragon, Samsung Exynos, MediaTek, Huawei Kirin, Silicon Hive VEX/VLIW, ST40/ST200.
+  - Additional Edge AI & Automotive: TinyML, TensorFlow Lite Micro, TensorRT, ONNX Runtime on Nvidia A100/T4, TPU, Intel Gaudi2/Gaudi3. Automotive knowledge in traction inverters, BMS, OBC, DC/DC conversion, and X-in-1 architectures.
 
 - Education & Certifications:
-  - National Engineering School of Tunis (ENIT) - Software Engineering Diploma (2006-2009)[cite: 1].
-  - Project Management Professional (PMP) certified by PMI[cite: 1].
+  - National Engineering School of Tunis (ENIT) - Software Engineering Diploma (2006-2009).
+  - Project Management Professional (PMP) certified by PMI.
 
 Guidelines for Responding:
 - Maintain a warm, polite, encouraging, and deeply approachable tone. Always make recruiters and visitors feel valued.
-- Use the comprehensive profile data above to provide detailed, accurate answers to any question (e.g., travel history to China/EMEA, past companies, specific microcontrollers, or security standards).
+- Use the comprehensive profile data above to provide detailed, accurate answers to any question.
 """
 
 # --- SIDEBAR PROFILE & API CONFIG ---
 with st.sidebar:
+    # Safely load and decode the private profile photo from Streamlit Secrets (keeps GitHub repo private)
+    if "PROFILE_IMAGE_BASE64" in st.secrets:
+        try:
+            image_bytes = base64.b64decode(st.secrets["PROFILE_IMAGE_BASE64"])
+            image = Image.open(io.BytesIO(image_bytes))
+            st.image(image, width=130)
+        except Exception:
+            pass
+
     st.markdown("""
         <div class="profile-card">
             <h2 style="margin:0; font-size: 1.25rem; color: #f8fafc;">Mehdi Chemsi</h2>
@@ -156,7 +179,7 @@ if not api_key:
 else:
     client = genai.Client(api_key=api_key)
 
-    # Initialize chat history with a kinder greeting
+    # Initialize chat history with corrected welcome greeting
     if "messages" not in st.session_state:
         st.session_state.messages = [
             {
@@ -190,7 +213,7 @@ else:
                     
                     # Create chat session with history and system instruction
                     chat = client.chats.create(
-                        model='gemini-3.6-flash',
+                        model='gemini-2.5-flash',
                         history=formatted_history,
                         config={
                             'system_instruction': RESUME_CONTEXT,
