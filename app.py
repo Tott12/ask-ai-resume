@@ -37,12 +37,26 @@ st.markdown("""
         line-height: 1.6 !important;
     }
     
-    /* Fix chat input text and container visibility */
+    /* Fix chat input text, container visibility, and placeholder legibility */
     .stChatInput textarea {
         color: #ffffff !important;
         background-color: #1e293b !important;
         font-size: 1rem !important;
     }
+    .stChatInput textarea::placeholder {
+        color: #94a3b8 !important;
+        opacity: 1 !important;
+    }
+    .stChatInput textarea::-webkit-input-placeholder {
+        color: #94a3b8 !important;
+    }
+    .stChatInput textarea::-moz-placeholder {
+        color: #94a3b8 !important;
+    }
+    .stChatInput textarea:-ms-input-placeholder {
+        color: #94a3b8 !important;
+    }
+    
     .stChatInputContainer {
         background-color: #1e293b !important;
         border: 1px solid #475569 !important;
