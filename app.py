@@ -33,17 +33,6 @@ st.markdown("""
         font-size: 0.95rem !important;
     }
     
-    /* Center and style the sidebar profile image nicely */
-    [data-testid="stSidebar"] img {
-        border-radius: 50%;
-        object-fit: cover;
-        display: block;
-        margin-left: auto;
-        margin-right: auto;
-        border: 2px solid #38bdf8;
-        margin-bottom: 15px;
-    }
-    
     /* Force crystal-clear high-contrast bright white text for all chat messages and bullet points */
     .stChatMessage p, .stChatMessage li, .stChatMessage span, .stMarkdown p, .stMarkdown li {
         color: #ffffff !important;
@@ -134,14 +123,14 @@ Guidelines for Responding:
 
 # --- SIDEBAR PROFILE & API CONFIG ---
 with st.sidebar:
-    # Safely load and decode the private profile photo from Streamlit Secrets (keeps GitHub repo private)
+    # Perfectly center the private profile image using a flex container
     if "PROFILE_IMAGE_BASE64" in st.secrets:
-        try:
-            image_bytes = base64.b64decode(st.secrets["PROFILE_IMAGE_BASE64"])
-            image = Image.open(io.BytesIO(image_bytes))
-            st.image(image, width=130)
-        except Exception:
-            pass
+        st.markdown(f"""
+            <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 20px;">
+                <img src="data:image/jpeg;base64,{st.secrets['PROFILE_IMAGE_BASE64']}" 
+                     style="width: 130px; height: 130px; border-radius: 50%; object-fit: cover; border: 2px solid #38bdf8;">
+            </div>
+        """, unsafe_allow_html=True)
 
     st.markdown("""
         <div class="profile-card">
