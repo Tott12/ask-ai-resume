@@ -64,22 +64,24 @@ st.markdown("""
 RESUME_CONTEXT = """
 You are a warm, exceptionally polite, and welcoming AI assistant representing Mehdi Chemsi (مهدي الشمسي), a Senior Software Product Application and Embedded Security Engineer based in Veghel, Netherlands. 
 
-Your goal is to greet anyone visiting this page with genuine kindness and enthusiasm, and to answer any questions they have about Mehdi's professional background, technical expertise, and career history with grace and clarity.
+Your goal is to greet anyone visiting this page with genuine kindness and enthusiasm, and to answer any questions they have about Mehdi's professional background, technical expertise, firmware debugging, customer support, and field engineering experience with grace and clarity.
 
 Candidate Profile Summary:
 - Name: Mehdi Chemsi (مهدي الشمسي)
 - Location: Veghel, Netherlands
 - Current Role: Senior Software Product Application and Embedded Security Engineer at Intel Corporation.
-- Career Background: Extensive semiconductor industry experience spanning software development, System-on-Chip (SoC) architecture, firmware engineering, and hardware security across companies including STMicroelectronics, NXP Semiconductors, and Intel Corporation.
+- Career Background: Extensive semiconductor industry experience spanning software development, System-on-Chip (SoC) architecture, firmware engineering, hardware security, customer support, and field engineering across companies including STMicroelectronics, NXP Semiconductors, and Intel Corporation.
 - Core Technical Expertise:
   * Embedded Systems & Processors: VLIW core architectures, Cadence Tensilica Vision 341 DSPs, microcontrollers (STM32, Raspberry Pi), RTOS (FreeRTOS, Zephyr).
-  * Compilers & Toolchains: GCC, LLVM, GDB, CMake, Xtensa Xplorer IDE.
+  * Firmware & Debugging: Low-level firmware development, advanced debugging, compiler toolchains (GCC, LLVM, GDB, CMake, Xtensa Xplorer IDE).
   * Hardware Security & Compliance: Root of Trust, Secure Boot, Trusted Execution Environments, ARM TrustZone, TPM, Hardware Security Modules (HSMs), FIPS 140-3 certifiability, and EU Cyber Resilience Act compliance.
-  * Software & Development Tooling: Linux environments, WSL2, Ubuntu, Bash, Zsh, Git, OpenSSL, Python, C/C++, and static analysis tools (SonarQube, Coverity, Flawfinder, Cppcheck).
+  * Customer Enablement & Field Engineering: Technical customer support, product application engineering, guiding tier-1 clients through hardware/software integration and troubleshooting.
+  * Software & Development Tooling: Linux environments, WSL2, Ubuntu, Bash, Zsh, Git, OpenSSL, Python, C/C++, and static analysis tools.
 - Languages: Fluent in English, French, and Arabic.
 
 Guidelines for Responding:
 - Maintain a warm, polite, encouraging, and deeply approachable tone. Always make recruiters and visitors feel valued.
+- Highlight his strengths in bridging deep engineering (firmware debugging, SoC security) with customer success and field engineering enablement.
 - Base your answers strictly on the profile details provided above. If asked about something outside this scope, politely and warmly clarify or pivot to related engineering strengths.
 """
 
@@ -88,13 +90,21 @@ with st.sidebar:
     st.markdown("""
         <div class="profile-card">
             <h2 style="margin:0; font-size: 1.25rem; color: #f8fafc;">Mehdi Chemsi</h2>
+            <p style="margin:5px 0 0 0; font-size: 0.85rem; color: #94a3b8;">Senior Field Application and Support Engineer</p>
+            <p style="margin:5px 0 0 0; font-size: 0.85rem; color: #94a3b8;">Senior Embedded Software Engineer</p>
             <p style="margin:5px 0 0 0; font-size: 0.85rem; color: #94a3b8;">Senior Embedded Security Engineer</p>
-            <p style="margin:5px 0 0 0; font-size: 0.75rem; color: #38bdf8;">📍 Veghel, Netherlands • Intel</p>
+            <p style="margin:5px 0 0 0; font-size: 0.75rem; color: #38bdf8;">📍 Veghel, The Netherlands • Intel Corporation</p>
         </div>
     """, unsafe_allow_html=True)
     
     st.markdown("### 💡 Quick Background")
-    st.markdown("- **Current:** Intel Corporation\n- **Specialty:** SoC Architecture & Hardware Security\n- **Stack:** C/C++, Python, Linux, VLIW, FreeRTOS")
+    st.markdown(
+        "- **Current:** Intel Corporation\n"
+        "- **Specialty:** SoC Architecture & Hardware Security\n"
+        "- **Engineering:** Firmware Development & Advanced Debugging\n"
+        "- **Field Role:** Product Application & Customer Engineering\n"
+        "- **Stack:** C/C++, Python, Linux, VLIW, FreeRTOS"
+    )
     
     st.markdown("---")
     
@@ -118,7 +128,7 @@ else:
         st.session_state.messages = [
             {
                 "role": "model",
-                "content": "Hello and a very warm welcome! 😊 I am delighted to help you get to know Mehdi Chemsi. Whether you're curious about his embedded security work at Intel, his experience with VLIW core architectures, or his background in semiconductor engineering, please feel free to ask!"
+                "content": "Hello and a very warm welcome! 😊 I am delighted to help you get to know Mehdi Chemsi. Whether you're curious about his embedded security work at Intel, firmware development and debugging, or his customer support and field engineering experience, please feel free to ask!"
             }
         ]
 
@@ -128,7 +138,7 @@ else:
             st.markdown(message["content"])
 
     # Handle user input
-    if prompt := st.chat_input("Ask a question (e.g., 'What is Mehdi's experience with Secure Boot and Hardware Security?')"):
+    if prompt := st.chat_input("Ask a question (e.g., 'What is Mehdi's experience with firmware debugging and customer support?')"):
         st.session_state.messages.append({"role": "user", "content": prompt})
         with st.chat_message("user"):
             st.markdown(prompt)
