@@ -20,7 +20,7 @@ st.markdown("""
     footer {visibility: hidden;}
     header {visibility: hidden;}
     
-    /* Fix chat input background and text color visibility */
+    /* Fix chat input text and container visibility */
     .stChatInput textarea {
         color: #f8fafc !important;
         background-color: #1e293b !important;
@@ -118,19 +118,26 @@ else:
         with st.chat_message("model"):
             with st.spinner("Thinking..."):
                 try:
-                    chat_history = [
-                        {"role": "user" if m["role"] == "user" else "model", "parts": [m["content"]]}
+                    # Format past messages correctly for the SDK chat API
+                    formatted_history = [
+                        {
+                            "role": "user" if m["role"] == "user" else "model",
+                            "parts": [{"text": m["content"]}]
+                        }
                         for m in st.session_state.messages[:-1]
                     ]
                     
-                    response = client.models.generate_content(
+                    # Create chat session with history and system instruction
+                    chat = client.chats.create(
                         model='gemini-2.5-flash',
-                        contents=chat_history + [{"role": "user", "parts": [prompt]}],
+                        history=formatted_history,
                         config={
                             'system_instruction': RESUME_CONTEXT,
                             'temperature': 0.3,
                         }
                     )
+                    
+                    response = chat.send_message(prompt)
                     reply = response.text
                     st.markdown(reply)
                 except Exception as e:
