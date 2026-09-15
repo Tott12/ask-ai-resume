@@ -8,7 +8,7 @@ st.set_page_config(
     layout="centered"
 )
 
-# Custom CSS for a sleek, modern look and fixing input text visibility
+# Custom CSS for high contrast, crystal clear text readability, and sleek dark mode
 st.markdown("""
     <style>
     .stApp {
@@ -20,14 +20,22 @@ st.markdown("""
     footer {visibility: hidden;}
     header {visibility: hidden;}
     
+    /* Force crystal-clear high-contrast bright white text for all chat messages and bullet points */
+    .stChatMessage p, .stChatMessage li, .stChatMessage span, .stMarkdown p, .stMarkdown li {
+        color: #ffffff !important;
+        font-size: 1.05rem !important;
+        line-height: 1.6 !important;
+    }
+    
     /* Fix chat input text and container visibility */
     .stChatInput textarea {
-        color: #f8fafc !important;
+        color: #ffffff !important;
         background-color: #1e293b !important;
+        font-size: 1rem !important;
     }
     .stChatInputContainer {
         background-color: #1e293b !important;
-        border: 1px solid #334155 !important;
+        border: 1px solid #475569 !important;
         border-radius: 12px !important;
     }
     
@@ -127,7 +135,7 @@ else:
                         for m in st.session_state.messages[:-1]
                     ]
                     
-                    # Create chat session with history and system instruction (using updated model)
+                    # Create chat session with history and system instruction
                     chat = client.chats.create(
                         model='gemini-3.6-flash',
                         history=formatted_history,
