@@ -157,7 +157,7 @@ else:
             st.markdown(message["content"])
 
     # Handle user input
-    if prompt := st.chat_input("Ask a question (e.g., 'Did Mehdi travel to China and EMEA for customer support?')"):
+    if prompt := st.chat_input("Ask a question (e.g., 'What MCU/SoC families and firmware architectures has Mehdi worked with?')"):
         st.session_state.messages.append({"role": "user", "content": prompt})
         with st.chat_message("user"):
             st.markdown(prompt)
