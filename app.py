@@ -200,9 +200,9 @@ else:
                         for m in st.session_state.messages[:-1]
                     ]
                     
-                    # Create chat session with history and system instruction
+                    # Create chat session with history and system instruction using correct model
                     chat = client.chats.create(
-                        model='gemini-2.5-flash',
+                        model='gemini-3.6-flash',
                         history=formatted_history,
                         config={
                             'system_instruction': RESUME_CONTEXT,
