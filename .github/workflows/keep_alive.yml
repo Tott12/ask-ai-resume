@@ -2,9 +2,8 @@ name: Keep Streamlit Awake
 
 on:
   schedule:
-    # Runs every 6 hours automatically (At minute 0 past hour 0, 6, 12, and 18)
+    # Runs every 6 hours automatically
     - cron: '0 */6 * * *'
-  # Allows manual triggering from the GitHub Actions tab anytime
   workflow_dispatch:
 
 jobs:
@@ -13,4 +12,4 @@ jobs:
     steps:
       - name: Send HTTP request to Streamlit app
         run: |
-          curl -s -L -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" https://ask-ai-resume.streamlit.app > /dev/null
+          curl -s -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" --max-time 30 "https://ask-ai-resume.streamlit.app" > /dev/null || true
