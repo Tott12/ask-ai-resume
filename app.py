@@ -103,8 +103,8 @@ Your goal is to greet visitors with genuine kindness and enthusiasm, and answer 
      - Responsibilities: Customer application engineering and onsite field support for ST set-top-box SoCs across France, China, Taiwan, Korea, and Japan, for OEM accounts including Sagemcom, Technicolor, Samsung, and Panasonic. Developed video drivers and codecs (H.264, MPEG-2/4, VC1) across ST40, ST200, and ARM9 on embedded Linux (Yocto, Buildroot, OS21/STLinux).
 
 - Global Field & Travel Experience:
-  - Onsite customer/field engagement across 6+ countries: Netherlands, France, China, Taiwan, Korea, and Japan, plus remote engagement with US-based accounts.
-  - Supported over 10+ Tier-1 OEM accounts globally.
+  - Onsite & Field Engagement Across Key Global Markets: Extensive hands-on customer enablement and field engagement across North America (USA, Mexico), South America (Brazil), Asia (China, Taiwan, South Korea, Singapore, Japan, India), and across Europe (including the Netherlands, France, and neighboring regions).
+  - High-Impact Account Support: Supported 10+ Tier-1 OEM accounts globally through a combination of local technical field missions and remote engineering support for tier-1 strategic accounts.
 
 - Technical Stack & Skills:
   - Embedded Engineering: Embedded C/C++ Firmware Development, RTOS (FreeRTOS, Zephyr OS, ChibiOS, QNX), Embedded Linux (Yocto, Buildroot), Device Driver Development, SoC Bring-Up, Low-Level Debugging (JTAG, GDB, Saleae Logic Analyzer), DFE/DSP, BLE & Wireless.
