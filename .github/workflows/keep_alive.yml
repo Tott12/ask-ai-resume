@@ -2,14 +2,63 @@ name: Keep Streamlit Awake
 
 on:
   schedule:
-    # Runs every 6 hours automatically
+    # Runs every 6 hours (00:00, 06:00, 12:00, 18:00 UTC)
     - cron: '0 */6 * * *'
   workflow_dispatch:
 
 jobs:
-  ping-app:
+  ping-and-keepalive:
     runs-on: ubuntu-latest
     steps:
-      - name: Send HTTP request to Streamlit app
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Prevent Workflow Disabling (Keep-Alive Commit)
+        # Bypasses GitHub's 60-day inactivity rule by making a tiny automated commit once a month
         run: |
-          curl -s -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" --max-time 30 "https://ask-ai-resume.streamlit.app" > /dev/null || true
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          date +'%Y-%m-%d %H:%M:%S' > .github/last_ping.txt
+          git add .github/last_ping.txt
+          git diff --quiet && git diff --staged --quiet || (git commit -m "chore: automated keep-alive timestamp update" && git push)
+        continue-on-error: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Playwright
+        run: |
+          python -m pip install --upgrade pip
+          pip install playwright
+          playwright install chromium --with-deps
+
+      - name: Load Streamlit App & Auto-Wake
+        run: |
+          python -c "
+          from playwright.sync_api import sync_playwright
+          import time
+
+          with sync_playwright() as p:
+              browser = p.chromium.launch(headless=True)
+              context = browser.new_context(
+                  user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+              )
+              page = context.new_page()
+              
+              print('Navigating to app...')
+              page.goto('https://ask-ai-resume.streamlit.app', timeout=90000)
+              page.wait_for_timeout(10000)
+              
+              # Automatically click the 'Wake up' button if Streamlit is sleeping
+              wake_button = page.query_selector('text=\"Yes, get this app back up!\"')
+              if wake_button:
+                  print('App was asleep. Clicking wake-up button...')
+                  wake_button.click()
+                  page.wait_for_timeout(20000)
+              else:
+                  print('App is awake and active!')
+                  
+              browser.close()
+          "
