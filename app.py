@@ -197,13 +197,13 @@ else:
                 
                 contents.append({"role": "user", "parts": [{"text": prompt}]})
 
-                # List of production models to try with retry backoff
-                candidate_models = ['gemini-2.5-flash', 'gemini-1.5-flash']
+                # Active model list with robust failover
+                candidate_models = ['gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-2.5-flash']
                 reply = None
+                last_error = None
                 
                 for model_name in candidate_models:
-                    # Retry up to 3 times per model on temporary 503 errors
-                    for attempt in range(3):
+                    for attempt in range(2):
                         try:
                             response = client.models.generate_content(
                                 model=model_name,
@@ -216,10 +216,9 @@ else:
                             reply = response.text
                             break
                         except Exception as e:
-                            if "503" in str(e) or "UNAVAILABLE" in str(e):
-                                time.sleep(1.5 * (attempt + 1))  # Pause briefly and retry
-                                continue
-                            break  # Move to next candidate model if it's not a temporary 503
+                            last_error = e
+                            time.sleep(1)
+                            continue
                     
                     if reply:
                         break
@@ -227,7 +226,6 @@ else:
                 if reply:
                     st.markdown(reply)
                 else:
-                    reply = "The service is temporarily experiencing high traffic. Please wait a moment and send your question again."
-                    st.error(reply)
+                    st.error(f"API Error: {last_error}")
 
         st.session_state.messages.append({"role": "model", "content": reply})
