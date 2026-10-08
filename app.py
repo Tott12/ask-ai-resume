@@ -1,5 +1,6 @@
 import base64
 import io
+import time
 from PIL import Image
 import streamlit as st
 from google import genai
@@ -77,7 +78,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Comprehensive Professional Resume Context (Derived directly from CV)
+# Comprehensive Professional Resume Context
 RESUME_CONTEXT = """
 You are a warm, exceptionally polite, and welcoming AI assistant representing Mehdi Chemsi (مهدي الشمسي), an expert Embedded Software Engineer & Field Application Engineer based in Veghel, Netherlands. 
 
@@ -196,19 +197,37 @@ else:
                 
                 contents.append({"role": "user", "parts": [{"text": prompt}]})
 
-                try:
-                    response = client.models.generate_content(
-                        model='gemini-flash-latest',
-                        contents=contents,
-                        config={
-                            'system_instruction': RESUME_CONTEXT,
-                            'temperature': 0.3,
-                        }
-                    )
-                    reply = response.text
+                # List of production models to try with retry backoff
+                candidate_models = ['gemini-2.5-flash', 'gemini-1.5-flash']
+                reply = None
+                
+                for model_name in candidate_models:
+                    # Retry up to 3 times per model on temporary 503 errors
+                    for attempt in range(3):
+                        try:
+                            response = client.models.generate_content(
+                                model=model_name,
+                                contents=contents,
+                                config={
+                                    'system_instruction': RESUME_CONTEXT,
+                                    'temperature': 0.3,
+                                }
+                            )
+                            reply = response.text
+                            break
+                        except Exception as e:
+                            if "503" in str(e) or "UNAVAILABLE" in str(e):
+                                time.sleep(1.5 * (attempt + 1))  # Pause briefly and retry
+                                continue
+                            break  # Move to next candidate model if it's not a temporary 503
+                    
+                    if reply:
+                        break
+
+                if reply:
                     st.markdown(reply)
-                except Exception as e:
-                    reply = f"An error occurred: {e}"
+                else:
+                    reply = "The service is temporarily experiencing high traffic. Please wait a moment and send your question again."
                     st.error(reply)
 
         st.session_state.messages.append({"role": "model", "content": reply})
