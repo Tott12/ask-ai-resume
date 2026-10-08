@@ -197,8 +197,8 @@ else:
                 
                 contents.append({"role": "user", "parts": [{"text": prompt}]})
 
-                # Active model list with robust failover
-                candidate_models = ['gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-2.5-flash']
+                # Active production endpoints
+                candidate_models = ['gemini-3.8-flash', 'gemini-3.7-flash', 'gemini-3.5-flash']
                 reply = None
                 last_error = None
                 
@@ -216,7 +216,9 @@ else:
                             reply = response.text
                             break
                         except Exception as e:
-                            last_error = e
+                            # Capture non-404 errors for diagnostics; skip 404 cleanly
+                            if "404" not in str(e):
+                                last_error = e
                             time.sleep(1)
                             continue
                     
@@ -225,7 +227,9 @@ else:
 
                 if reply:
                     st.markdown(reply)
-                else:
+                elif last_error:
                     st.error(f"API Error: {last_error}")
+                else:
+                    st.error("The model endpoints are currently experiencing temporary traffic spikes. Please try again in a few moments.")
 
         st.session_state.messages.append({"role": "model", "content": reply})
