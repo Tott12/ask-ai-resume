@@ -123,7 +123,6 @@ Guidelines for Responding:
 
 # --- SIDEBAR PROFILE & API CONFIG ---
 with st.sidebar:
-    # Center profile image
     if "PROFILE_IMAGE_BASE64" in st.secrets:
         st.markdown(f"""
             <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 20px;">
@@ -168,7 +167,7 @@ if not api_key:
 else:
     client = genai.Client(api_key=api_key)
 
-    # Initialize chat history with greeting
+    # Initialize chat history
     if "messages" not in st.session_state:
         st.session_state.messages = [
             {
@@ -190,43 +189,26 @@ else:
 
         with st.chat_message("model"):
             with st.spinner("Thinking..."):
-                formatted_history = [
-                    {
-                        "role": "user" if m["role"] == "user" else "model",
-                        "parts": [{"text": m["content"]}]
-                    }
-                    for m in st.session_state.messages[:-1]
-                ]
+                contents = []
+                for m in st.session_state.messages[:-1]:
+                    role = "user" if m["role"] == "user" else "model"
+                    contents.append({"role": role, "parts": [{"text": m["content"]}]})
                 
-                # Active Flash model endpoints supported by google.genai
-                candidate_models = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash']
-                reply = None
-                last_error = None
-                
-                for model_name in candidate_models:
-                    try:
-                        chat = client.chats.create(
-                            model=model_name,
-                            history=formatted_history,
-                            config={
-                                'system_instruction': RESUME_CONTEXT,
-                                'temperature': 0.3,
-                            }
-                        )
-                        response = chat.send_message(prompt)
-                        reply = response.text
-                        break
-                    except Exception as e:
-                        # Continue silently on 404/NOT_FOUND errors without capturing them as the primary error
-                        if "404" not in str(e):
-                            last_error = e
-                        continue
-                
-                if reply:
+                contents.append({"role": "user", "parts": [{"text": prompt}]})
+
+                try:
+                    response = client.models.generate_content(
+                        model='gemini-flash-latest',
+                        contents=contents,
+                        config={
+                            'system_instruction': RESUME_CONTEXT,
+                            'temperature': 0.3,
+                        }
+                    )
+                    reply = response.text
                     st.markdown(reply)
-                elif last_error:
-                    st.error(f"Service temporarily unavailable: {last_error}")
-                else:
-                    st.error("The model endpoints are currently experiencing high demand. Please try again in a few moments.")
+                except Exception as e:
+                    reply = f"An error occurred: {e}"
+                    st.error(reply)
 
         st.session_state.messages.append({"role": "model", "content": reply})
