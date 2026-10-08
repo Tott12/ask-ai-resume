@@ -198,8 +198,8 @@ else:
                     for m in st.session_state.messages[:-1]
                 ]
                 
-                # Candidate models to try in sequence if high demand occurs
-                candidate_models = ['gemini-2.5-flash', 'gemini-1.5-flash', 'gemini-1.5-pro']
+                # Supported production models for google.genai SDK
+                candidate_models = ['gemini-2.5-flash', 'gemini-2.5-pro']
                 reply = None
                 last_error = None
                 
@@ -223,7 +223,7 @@ else:
                 if reply:
                     st.markdown(reply)
                 else:
-                    reply = f"All model endpoints are currently busy or unavailable. Details: {last_error}"
+                    reply = f"Service temporarily unavailable. Details: {last_error}"
                     st.error(reply)
 
         st.session_state.messages.append({"role": "model", "content": reply})
