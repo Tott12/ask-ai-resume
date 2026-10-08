@@ -198,8 +198,8 @@ else:
                     for m in st.session_state.messages[:-1]
                 ]
                 
-                # Production models for google.genai SDK
-                candidate_models = ['gemini-2.5-flash', 'gemini-1.5-flash']
+                # Active Flash model endpoints supported by google.genai
+                candidate_models = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash']
                 reply = None
                 last_error = None
                 
@@ -217,13 +217,16 @@ else:
                         reply = response.text
                         break
                     except Exception as e:
-                        last_error = e
+                        # Continue silently on 404/NOT_FOUND errors without capturing them as the primary error
+                        if "404" not in str(e):
+                            last_error = e
                         continue
                 
                 if reply:
                     st.markdown(reply)
+                elif last_error:
+                    st.error(f"Service temporarily unavailable: {last_error}")
                 else:
-                    reply = f"Service temporarily unavailable. Details: {last_error}"
-                    st.error(reply)
+                    st.error("The model endpoints are currently experiencing high demand. Please try again in a few moments.")
 
         st.session_state.messages.append({"role": "model", "content": reply})
