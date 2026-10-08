@@ -123,7 +123,7 @@ Guidelines for Responding:
 
 # --- SIDEBAR PROFILE & API CONFIG ---
 with st.sidebar:
-    # Perfectly center the private profile image using a flex container
+    # Center profile image
     if "PROFILE_IMAGE_BASE64" in st.secrets:
         st.markdown(f"""
             <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 20px;">
@@ -168,7 +168,7 @@ if not api_key:
 else:
     client = genai.Client(api_key=api_key)
 
-    # Initialize chat history with corrected welcome greeting
+    # Initialize chat history with greeting
     if "messages" not in st.session_state:
         st.session_state.messages = [
             {
@@ -190,31 +190,40 @@ else:
 
         with st.chat_message("model"):
             with st.spinner("Thinking..."):
-                try:
-                    # Format past messages correctly for the SDK chat API
-                    formatted_history = [
-                        {
-                            "role": "user" if m["role"] == "user" else "model",
-                            "parts": [{"text": m["content"]}]
-                        }
-                        for m in st.session_state.messages[:-1]
-                    ]
-                    
-                    # Create chat session with history and system instruction using correct model
-                    chat = client.chats.create(
-                        model='gemini-3.6-flash',
-                        history=formatted_history,
-                        config={
-                            'system_instruction': RESUME_CONTEXT,
-                            'temperature': 0.3,
-                        }
-                    )
-                    
-                    response = chat.send_message(prompt)
-                    reply = response.text
+                formatted_history = [
+                    {
+                        "role": "user" if m["role"] == "user" else "model",
+                        "parts": [{"text": m["content"]}]
+                    }
+                    for m in st.session_state.messages[:-1]
+                ]
+                
+                # Candidate models to try in sequence if high demand occurs
+                candidate_models = ['gemini-2.5-flash', 'gemini-1.5-flash', 'gemini-1.5-pro']
+                reply = None
+                last_error = None
+                
+                for model_name in candidate_models:
+                    try:
+                        chat = client.chats.create(
+                            model=model_name,
+                            history=formatted_history,
+                            config={
+                                'system_instruction': RESUME_CONTEXT,
+                                'temperature': 0.3,
+                            }
+                        )
+                        response = chat.send_message(prompt)
+                        reply = response.text
+                        break
+                    except Exception as e:
+                        last_error = e
+                        continue
+                
+                if reply:
                     st.markdown(reply)
-                except Exception as e:
-                    reply = f"An error occurred: {e}"
+                else:
+                    reply = f"All model endpoints are currently busy or unavailable. Details: {last_error}"
                     st.error(reply)
 
         st.session_state.messages.append({"role": "model", "content": reply})
