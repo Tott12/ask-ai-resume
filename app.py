@@ -198,8 +198,8 @@ else:
                     for m in st.session_state.messages[:-1]
                 ]
                 
-                # Supported production models for google.genai SDK
-                candidate_models = ['gemini-2.5-flash', 'gemini-2.5-pro']
+                # Production models for google.genai SDK
+                candidate_models = ['gemini-2.5-flash', 'gemini-1.5-flash']
                 reply = None
                 last_error = None
                 
